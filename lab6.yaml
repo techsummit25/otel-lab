@@ -1,0 +1,21 @@
+splunkObservability:
+  realm: us1
+splunkPlatform:
+  index: ps107
+  endpoint: https://http-inputs-ps-107.splunkcloud.com
+  insecureSkipVerify: true
+agent:
+  config:
+    receivers:
+      kubeletstats:
+        insecure_skip_verify: true
+    processors:
+      filter/dns:
+        logs:
+          log_record:
+            - IsMatch(resource.attributes["k8s.container.name"], "coredns")
+
+    service:
+      pipelines:
+        logs:
+          processors: [memory_limiter, batch, resourcedetection, resource, resource/add_agent_k8s, filter/dns]

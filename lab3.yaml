@@ -1,0 +1,6 @@
+splunkObservability:
+  realm: us1
+splunkPlatform:
+  index: ps107
+  endpoint: https://http-inputs-ps-107.splunkcloud.com
+  insecureSkipVerify: true

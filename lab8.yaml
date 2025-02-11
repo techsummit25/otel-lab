@@ -1,0 +1,61 @@
+splunkObservability:
+  realm: us1
+splunkPlatform:
+  index: ps107
+  endpoint: https://http-inputs-ps-107.splunkcloud.com
+  insecureSkipVerify: true
+agent:
+  config:
+    connector:
+      count/errors:
+        logs:
+          count.of.error.messages.in.logs:
+            description: "Number of Error messages observed in Logs"
+            conditions:
+              - IsMatch(body, ".*Error.*|.*error.*|.*ERROR.*")
+    receivers:
+      kubeletstats:
+        insecure_skip_verify: true
+    processors:
+      filter/test-app: # Add a new filter processor named test-app
+        error_mode: ignore
+        metrics:
+          metric:
+            # Metrics matching this condition below will be dropped
+            - 'resource.attributes["k8s.namespace.name"] == "test-app"'
+      filter/dns:
+        logs:
+          log_record:
+            - IsMatch(resource.attributes["k8s.container.name"], "coredns")
+
+    service:
+      pipelines:
+        # Update existing metrics pipeline.
+        # If you have added any new metrics pipelines, update them as well.
+        metrics:
+          # Since during the OTEL config merge process, list gets replaced
+          # You must re-state the full processors list (existing + new)
+          processors: [memory_limiter, batch, resourcedetection, resource, filter/test-app]
+        logs:
+          processors: [memory_limiter, batch, resourcedetection, resource, resource/add_agent_k8s, filter/dns]
+          exporters: [splunk_hec/platform_logs, count/errors] 
+        metrics/error_log_count:
+          receivers: [count/errors]
+          processors: [memory_limiter, batch]
+          exporters: [signalfx]
+
+clusterReceiver:   # This change will only affect the clusterReceiver
+  config:
+    processors:
+      filter/test-app:
+        error_mode: ignore
+        metrics:
+          metric:
+            # Metrics matching this condition will be dropped
+            - 'resource.attributes["k8s.namespace.name"] == "test-app"'
+    service:
+      pipelines:
+        metrics:
+          # Since during the OTEL config merge process, list gets replaced
+          # You must re-state the full processors list (existing + new)
+          processors: [memory_limiter, batch, resource, resource/k8s_cluster, filter/test-app]
