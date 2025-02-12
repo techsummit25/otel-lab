@@ -6,7 +6,7 @@ splunkPlatform:
   insecureSkipVerify: true
 agent:
   config:
-    connector:
+    connectors:
       count/errors:
         logs:
           count.of.error.messages.in.logs:
