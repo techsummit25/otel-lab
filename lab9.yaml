@@ -60,11 +60,7 @@ clusterReceiver:   # This change will only affect the clusterReceiver
           # You must re-state the full processors list (existing + new)
           processors: [memory_limiter, batch, resource, resource/k8s_cluster, filter/test-app]
 
-operator:
-  enabled: true
-
-operatorcrds:
-  install: true
-
-certmanager:
-  enabled: true
+# Lab 9 additions below
+operator: {enabled: true}
+operatorcrds: {install: true}
+certmanager: {enabled: true}
