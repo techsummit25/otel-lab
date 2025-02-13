@@ -1,0 +1,41 @@
+image:
+  repo: ghcr.io/splunk/robot-shop-demo
+  version: 2.1.0
+  pullPolicy: Always
+
+global:
+  env:
+  - name: OTEL_SERVICE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.labels['service']
+  - name: SPLUNK_OTEL_AGENT
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+  - name: OTEL_EXPORTER_OTLP_PORT
+    value: "4317"
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: http://$(SPLUNK_OTEL_AGENT):$(OTEL_EXPORTER_OTLP_PORT)
+
+shipping:
+  env:
+  - name: OTEL_EXPORTER_OTLP_PROTOCOL
+    value: grpc
+  podAnnotations:
+    instrumentation.opentelemetry.io/inject-java: default/splunk-otel-collector
+
+web:
+  ports:
+    nodePort: 32322
+
+############################################
+# The section below was added in lab 9     #
+############################################
+cart:
+  podAnnotations:
+    instrumentation.opentelemetry.io/inject-nodejs: "default/splunk-otel-collector"
+
+user:
+  podAnnotations:
+    instrumentation.opentelemetry.io/inject-nodejs: "default/splunk-otel-collector"

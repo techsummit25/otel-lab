@@ -6,7 +6,7 @@ splunkPlatform:
   insecureSkipVerify: true
 agent:
   config:
-    connector:
+    connectors:
       count/errors:
         logs:
           count.of.error.messages.in.logs:
@@ -60,11 +60,10 @@ clusterReceiver:   # This change will only affect the clusterReceiver
           # You must re-state the full processors list (existing + new)
           processors: [memory_limiter, batch, resource, resource/k8s_cluster, filter/test-app]
 
+# Lab 9 additions below
 operator:
   enabled: true
-
 operatorcrds:
   install: true
-
 certmanager:
   enabled: true
