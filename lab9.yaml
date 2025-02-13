@@ -61,6 +61,9 @@ clusterReceiver:   # This change will only affect the clusterReceiver
           processors: [memory_limiter, batch, resource, resource/k8s_cluster, filter/test-app]
 
 # Lab 9 additions below
-operator: {enabled: true}
-operatorcrds: {install: true}
-certmanager: {enabled: true}
+operator:
+  enabled: true
+operatorcrds:
+  install: true
+certmanager:
+  enabled: true
